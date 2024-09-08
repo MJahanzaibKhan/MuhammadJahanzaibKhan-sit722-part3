@@ -1,1 +1,118 @@
-# Your Solution
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: book-catalog-deployment
+  labels:
+    app: book-catalog
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: book-catalog
+  template:
+    metadata:
+      labels:
+        app: book-catalog
+    spec:
+      containers:
+      - name: book-catalog
+        image: <ACR_URL>/book_catalog:v1
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          value: "ppostgresql://sit722_part3_0bhs_user:hepsU6XQPsvMJF98zAnHYkfd5J1311sE@dpg-crekq65svqrc73fk5qf0-a.oregon-postgres.render.com/sit722_part3_0bhs"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: book-catalog-service
+spec:
+  selector:
+    app: book-catalog
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8000
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inventory-management-deployment
+  labels:
+    app: inventory-management
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: inventory-management
+  template:
+    metadata:
+      labels:
+        app: inventory-management
+    spec:
+      containers:
+      - name: inventory-management
+        image: <ACR_URL>/inventory_management:v1
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          value: "postgresql://sit722_part3_0bhs_user:hepsU6XQPsvMJF98zAnHYkfd5J1311sE@dpg-crekq65svqrc73fk5qf0-a.oregon-postgres.render.com/sit722_part3_0bhs"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: inventory-management-service
+spec:
+  selector:
+    app: inventory-management
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8000
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres-deployment
+  labels:
+    app: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:13
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: "user"
+        - name: POSTGRES_PASSWORD
+          value: "password"
+        - name: POSTGRES_DB
+          value: "catalog_db"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-service
+spec:
+  selector:
+    app: postgres
+  ports:
+  - protocol: TCP
+    port: 5432
+    targetPort: 5432
+  type: ClusterIP

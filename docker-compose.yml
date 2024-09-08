@@ -1,1 +1,29 @@
-# Your Solution
+version: '3.8'
+
+services:
+  book_catalog:
+    build: ./book_catalog
+    ports:
+      - "8080:8000"
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgresql://sit722_part3_0bhs_user:hepsU6XQPsvMJF98zAnHYkfd5J1311sE@dpg-crekq65svqrc73fk5qf0-a.oregon-postgres.render.com/sit722_part3_0bhs
+
+  inventory_management:
+    build: ./inventory_management
+    ports:
+      - "8081:8000"
+    depends_on:
+      - postgres
+    environment:
+      - DATABASE_URL=postgresql://sit722_part3_0bhs_user:hepsU6XQPsvMJF98zAnHYkfd5J1311sE@dpg-crekq65svqrc73fk5qf0-a.oregon-postgres.render.com/sit722_part3_0bhs
+
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: catalog_db
+    ports:
+      - "5432:5432"
